@@ -44,6 +44,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
+
+
 public class RobotContainer extends SubsystemBase{
 
   
@@ -66,10 +68,9 @@ public class RobotContainer extends SubsystemBase{
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
 
-  private SendableChooser<Command> autoChooser;
+  private final SendableChooser<Command> autoChooser;
   
     public RobotContainer() {
-  
   
       
       // Subsystem initialization
@@ -103,15 +104,15 @@ public class RobotContainer extends SubsystemBase{
       SmartDashboard.putData("Auto Mode", autoChooser);
   
       // For convenience a programmer could change this when going to competition.
-      boolean isCompetition = true;
+      // boolean isCompetition = true;
   
       // Build an auto chooser. This will use Commands.none() as the default option.
       // autoChooser = AutoBuilder.buildAutoChooser();
-      autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
-      (stream) -> isCompetition
-        ? stream.filter(auto -> auto.getName().startsWith("comp"))
-        : stream
-    );
+    //   autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
+    //   (stream) -> isCompetition
+    //     ? stream.filter(auto -> auto.getName().startsWith("comp"))
+    //     : stream
+    // );
     // Another option that allows you to specify the default auto by its name
     // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
 
