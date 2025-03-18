@@ -6,6 +6,7 @@ package frc.robot;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.networktables.NetworkTable;
@@ -20,25 +21,34 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
-  private final RobotContainer m_robotContainer;
+  private RobotContainer m_robotContainer;
+
 
   public Robot() {
-    m_robotContainer = new RobotContainer();
+    // m_robotContainer = new RobotContainer();
   }
 
-  private SparkMax m_stageOneLeftMotor;
-  private SparkMax m_stageOneRightMotor;
-  private SparkMaxConfig followerConfig = new SparkMaxConfig();
+  // public static SparkMax clawAngleMotor;
+  // private SparkMaxConfig config = new SparkMaxConfig();
+
 
   @Override
   public void robotInit(){
     
-    //Assign motors
-    m_stageOneLeftMotor = new SparkMax(15, MotorType.kBrushless);
-    m_stageOneRightMotor = new SparkMax(16, MotorType.kBrushless);
+    // //Assign motors
+    // config
+    //    .idleMode(IdleMode.kBrake) 
+    //   .inverted(false);
+    // //Pair Applicable Motors
+    
+    // clawAngleMotor.configure(config,
+    // SparkMax.ResetMode.kResetSafeParameters,
+    // SparkMax.PersistMode.kPersistParameters); 
+    // ↑ no longer needed because of command-based structure
+      // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
+      // autonomous chooser on the dashboard.
+      m_robotContainer = new RobotContainer();
 
-    //Pair Applicable Motors
-    m 
   }
   @Override
   public void robotPeriodic() {
@@ -57,6 +67,8 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+    // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
@@ -73,6 +85,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
     // LIMELIGHT CODE ^~^
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     NetworkTableEntry tx = table.getEntry("tx");
