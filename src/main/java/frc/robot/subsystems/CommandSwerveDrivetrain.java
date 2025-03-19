@@ -25,6 +25,13 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.PathPlannerLogging;
+
+
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
  * Subsystem so it can easily be used in command-based projects.
@@ -40,6 +47,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.k180deg;
     /* Keep track if we've ever applied the operator perspective before or not */
     private boolean m_hasAppliedOperatorPerspective = false;
+
+    private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
 
     /* Swerve requests to apply during SysId characterization */
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
@@ -126,6 +135,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        configureAutoBuilder();
     }
 
     /**
@@ -150,6 +160,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        configureAutoBuilder();
     }
 
     /**
@@ -182,9 +193,45 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-    }
+        configureAutoBuilder();
+            }
+        
+            private void configureAutoBuilder() {
+                try {
+                    var config = RobotConfig.fromGUISettings();
+                    
+                                        AutoBuilder.configure(
+                                            () -> getState().Pose, 
+                                            this::resetPose,
+                                            () -> getState().Speeds,
+                    
+                                            (speeds, feedforwards) -> setControl(
+                                                //m_pathApplyRobotSpeeds.withSpeeds (speeds)
+                                                m_pathApplyRobotSpeeds.withSpeeds (speeds)
+                            .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesX())
+                            .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesY())
+                        ),
+                        new PPHolonomicDriveController(
 
-    /**
+                        new PIDConstants(10, 0, 0),
+
+                        new PIDConstants(7, 0, 0)
+                        ),
+                        config,
+
+                        ()-> DriverStation.getAlliance().orElse(Alliance.Blue)== Alliance.Red,
+                        this
+                    );
+                } catch (Exception ex) {
+                   DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
+                }
+        
+                    // TODO: handle exception
+                // TODO Auto-generated method stub
+                //throw new UnsupportedOperationException("Unimplemented method 'configureAutoBuilder'");
+            }
+        
+            /**
      * Returns a command that applies the specified control request to this swerve drivetrain.
      *
      * @param request Function returning the request to apply
@@ -215,6 +262,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutineToApply.dynamic(direction);
     }
+
+    
 
     @Override
     public void periodic() {

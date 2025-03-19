@@ -25,7 +25,7 @@ public class Robot extends TimedRobot {
 
 
   public Robot() {
-    // m_robotContainer = new RobotContainer();
+     m_robotContainer = new RobotContainer();
   }
 
   // public static SparkMax clawAngleMotor;
@@ -69,13 +69,15 @@ public class Robot extends TimedRobot {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
-    }
+  if (m_autonomousCommand != null) {
+    m_autonomousCommand.cancel();
+  }
   }
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+
+  }
 
   @Override
   public void autonomousExit() {}
